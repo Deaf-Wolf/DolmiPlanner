@@ -1,0 +1,26 @@
+﻿
+.event {
+    background-color: #3498db;
+    color: white;
+    padding: 5px;
+    border-radius: 3px;
+    font-size: 12px;
+    overflow: hidden;
+    pointer-events: auto;
+}
+
+    .event.work {
+        background-color: #3498db;
+    }
+
+    .event.personal {
+        background-color: #e74c3c;
+    }
+
+.event-title {
+    font-weight: bold;
+}
+
+.event-time {
+    font-size: 10px;
+}

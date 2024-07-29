@@ -1,0 +1,33 @@
+﻿
+<div class="modal @(IsVisible ? "show" : "")" tabindex="-1" style="@(IsVisible ? "display: block;" : "display: none;")">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">User Form</h5>
+                <button type="button" class="btn-close" aria-label="Close" @onclick="CloseModal"></button>
+            </div>
+            <div class="modal-body">
+                @ChildContent
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modal.show {
+        display: block;
+    }
+</style>
+
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+
+    private async Task CloseModal()
+    {
+        IsVisible = false;
+        await IsVisibleChanged.InvokeAsync(IsVisible);
+    }
+}
