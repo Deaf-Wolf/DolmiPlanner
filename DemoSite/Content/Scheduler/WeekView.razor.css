@@ -1,0 +1,45 @@
+﻿.week-view {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.date-header-row {
+    display: flex;
+    width: 100%;
+}
+
+.date-header {
+    flex: 1;
+    min-width: 200px;
+    text-align: center;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #ccc;
+    font-weight: bold;
+}
+
+.day-columns-container {
+    display: flex;
+    overflow-x: auto;
+    width: 100%;
+}
+
+.day-column {
+    flex: 1;
+    min-width: 200px;
+}
+
+    /* Remove the margin-right from the last day-column */
+    .day-column:last-child {
+        margin-right: 0;
+    }
+
+/* Adjust DayView styles */
+::deep .day-view {
+    border-top: none; /* Remove top border as we now have headers */
+}
+
+    ::deep .day-view h3 {
+        display: none; /* Hide the date header in DayView as we now have it in WeekView */
+    }

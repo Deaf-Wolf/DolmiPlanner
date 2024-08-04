@@ -2,13 +2,16 @@
 @using System.Globalization
 
 <div class="day-view">
-    <div class="time-column">
-        @for (int hour = 6; hour <= 22; hour++)
-        {
-            <div class="hour">@($"{hour:D2}:00")</div>
-        }
-    </div>
-    <div class="separator"></div>
+    @if (ShowTime == true)
+    {
+        <div class="time-column">
+            @for (int hour = 6; hour <= 22; hour++)
+            {
+                <div class="hour">@($"{hour:D2}:00")</div>
+            }
+        </div>
+        <div class="separator"></div>
+    }
     <div class="events-column">
         <div class="grid">
             @for (int hour = 6; hour <= 22; hour++)
@@ -22,7 +25,7 @@
         </div>
         @foreach (var evt in Events)
         {
-            <div class="event" style="@GetEventStyle(evt)">
+            <div class="event @evt.Eventtype.ToLower()" style="@GetEventStyle(evt)">
                 <div class="event-title">@evt.Title</div>
                 <div class="event-time">@evt.StartTime.ToString("HH:mm") - @evt.EndTime.ToString("HH:mm")</div>
             </div>
@@ -30,32 +33,17 @@
     </div>
 </div>
 
-
 @code {
     [Parameter]
+    public bool ShowTime { get; set; }
+    [Parameter]
     public List<Event> Events { get; set; } = new List<Event>();
-
     [Parameter]
     public DateOnly CurrentDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
-
     private string GetEventStyle(Event evt)
     {
         var start = (evt.StartTime.Hour - 6) * 60 + evt.StartTime.Minute;
         var duration = (evt.EndTime.Hour * 60 + evt.EndTime.Minute) - (evt.StartTime.Hour * 60 + evt.StartTime.Minute);
-
         return $"top: {start}px; height: {duration}px;";
-    }
-
-    protected override void OnInitialized()
-    {
-        for (int hour = 6; hour <= 22; hour++)
-        {
-            for (int minute = 0; minute < 60; minute += 10)
-            {
-                var top = (hour - 6) * 60 + minute;
-                var thickness = minute == 0 ? "2px" : "1px";
-                var color = minute == 0 ? "#aaa" : "#eee";
-            }
-        }
     }
 }

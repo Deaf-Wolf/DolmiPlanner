@@ -62,13 +62,12 @@
     position: absolute;
     left: 2px;
     right: 2px;
-    background-color: #007bff;
-    color: white;
     padding: 5px;
     border-radius: 3px;
     font-size: 12px;
     overflow: hidden;
     z-index: 1;
+    color: white;
 }
 
 .event-title {
@@ -77,4 +76,26 @@
 
 .event-time {
     font-size: 10px;
+}
+
+/* Event type colors */
+.event.meeting {
+    background-color: #007bff;
+}
+
+.event.workshop {
+    background-color: #28a745;
+}
+
+.event.lunch {
+    background-color: #ffc107;
+    color: black;
+}
+/* Dark text for better contrast */
+.event.conference {
+    background-color: #dc3545;
+}
+
+.event.appointment {
+    background-color: #6f42c1;
 }
