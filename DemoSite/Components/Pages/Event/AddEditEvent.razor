@@ -1,0 +1,133 @@
+﻿@page "/eventsAdd"
+@page "/eventsAdd/{Id:guid}"
+@using DemoApiLib
+@using DemoApiLib.Models.ApiModels
+@using Microsoft.AspNetCore.Components
+@inject DemoApiClientService apiClient
+@inject NavigationManager NavigationManager
+
+<h3>@(Id == null ? "Add New Event" : "Edit Event")</h3>
+
+@if (!IsUsersLoaded)
+{
+    <p>Loading users...</p>
+}
+else if (users == null || !users.Any())
+{
+    <p style="color:red;">NO USERS FOUND</p>
+}
+else
+{
+    <EditForm Model="@events" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="form-group">
+            <label for="title">Title:</label>
+            <InputText id="title" @bind-Value="events.Title" class="form-control" />
+            <ValidationMessage For="@(() => events.Title)" />
+        </div>
+        <div class="form-group">
+            <label for="eventDate">Event Date:</label>
+            <InputDate id="eventDate" @bind-Value="events.EventDate" class="form-control" />
+            <ValidationMessage For="@(() => events.EventDate)" />
+        </div>
+        <div class="form-group">
+            <label for="startTime">Start Time:</label>
+            <InputDate Type="InputDateType.Time" id="startTime" @bind-Value="events.StartTime" class="form-control" />
+            <ValidationMessage For="@(() => events.StartTime)" />
+        </div>
+        <div class="form-group">
+            <label for="endTime">End Time:</label>
+            <InputDate Type="InputDateType.Time" id="endTime" @bind-Value="events.EndTime" class="form-control" />
+            <ValidationMessage For="@(() => events.EndTime)" />
+        </div>
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <InputTextArea id="description" @bind-Value="events.Description" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="eventType">Event Type:</label>
+            <InputText id="eventType" @bind-Value="events.Eventtype" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="user">User:</label>
+            <InputSelect id="user" @bind-Value="events.UserId" class="form-control">
+                @foreach (var user in users)
+                {
+                    <option value="@user.Guid">@user.UserName</option>
+                }
+            </InputSelect>
+        </div>
+        <button type="submit" class="btn btn-primary">@(Id == null ? "Add Event" : "Update Event")</button>
+        <button type="button" class="btn btn-secondary" @onclick="NavigateToList">Cancel</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public Guid? Id { get; set; }
+
+    private Event events = new Event();
+    private List<User>? users;
+    private bool IsUsersLoaded = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+        if (Id.HasValue)
+        {
+            await LoadEvent();
+        }
+        else
+        {
+            events.Id = Guid.NewGuid();
+        }
+    }
+
+    private async Task LoadUsers()
+    {
+        users = await apiClient.GetUsers();
+        IsUsersLoaded = true;
+        if (users != null && users.Any() && events.UserId == Guid.Empty)
+        {
+            events.UserId = users.First().Guid;
+        }
+    }
+
+    private async Task LoadEvent()
+    {
+        if (Id.HasValue)
+        {
+            events = await apiClient.GetEvent(Id.Value) ?? new Event();
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        HttpResponseMessage response;
+        if (Id == null)
+        {
+            response = await apiClient.AddEvent(events);
+        }
+        else
+        {
+            response = await apiClient.UpdateEvent(events.Id, events);
+        }
+
+        if (response.IsSuccessStatusCode)
+        {
+            NavigateToList();
+        }
+        else
+        {
+            // Handle error
+            Console.WriteLine($"Error: {response.StatusCode}");
+            // Consider adding user-friendly error message display here
+        }
+    }
+
+    private void NavigateToList()
+    {
+        NavigationManager.NavigateTo("/events");
+    }
+}

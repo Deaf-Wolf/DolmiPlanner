@@ -1,6 +1,10 @@
-﻿@using DemoApiLib.Models.ApiModels
+﻿@using DemoApiLib
+@using DemoApiLib.Models.ApiModels
 @using DemoSite.Content.Scheduler
 @using System.Globalization
+
+@inject DemoApiClientService apiClient
+
 
 <div class="week-view">
     <div class="date-header-row">
@@ -19,7 +23,7 @@
             var showTime = i == 0; // Show time only for the first day
 
             <div class="day-column">
-                <DayView ShowTime="@showTime" Events="@GetEventsForDate(currentDate)" CurrentDate="@currentDate" />
+                <DayView ShowTime="@showTime" Events="@(GetEventsForDate(currentDate))" CurrentDate="@currentDate" />
             </div>
         }
     </div>
@@ -31,36 +35,22 @@
     [Parameter]
     public DateOnly StartDate { get; set; } = DateOnly.FromDateTime(DateTime.Today).AddDays(-(int)DateTime.Today.DayOfWeek);
 
+    private List<Event> eventsForWeek;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEvents();
+    }
+
+    private async Task LoadEvents()
+    {
+        eventsForWeek = await apiClient.GetAllEvents();
+        StateHasChanged();
+    }
+
     private List<Event> GetEventsForDate(DateOnly date)
     {
-        var random = new Random(date.DayNumber); // Seed with date for consistent randomness
-        var events = new List<Event>();
-
-        string[] eventTypes = { "Meeting", "Workshop", "Lunch", "Conference", "Appointment" };
-        string[] eventDescriptions = { "Team sync", "Project kickoff", "Client meeting", "Training session", "Performance review" };
-
-        int eventCount = random.Next(0, 4); // 0 to 3 events per day
-
-        for (int i = 0; i < eventCount; i++)
-        {
-            var startHour = random.Next(9, 17); // Events between 9 AM and 5 PM
-            var duration = random.Next(1, 4); // 1 to 3 hours long
-
-            var eventType = eventTypes[random.Next(eventTypes.Length)];
-            var description = eventDescriptions[random.Next(eventDescriptions.Length)];
-
-            events.Add(new Event
-                {
-                    Id = Guid.NewGuid(),
-                    Title = $"{eventType} - {i + 1}",
-                    EventDate = date,
-                    StartTime = new TimeOnly(startHour, 0),
-                    EndTime = new TimeOnly(Math.Min(startHour + duration, 18), 0), // Ensure end time doesn't go past 6 PM
-                    Description = description,
-                    Eventtype = eventType
-                });
-        }
-
-        return events;
+        return eventsForWeek?.Where(evt => evt.EventDate == date).ToList() ?? new List<Event>();
     }
+
 }

@@ -37,7 +37,8 @@
     [Parameter]
     public bool ShowTime { get; set; }
     [Parameter]
-    public List<Event> Events { get; set; } = new List<Event>();
+    public List<Event> Events { get; set; }
+
     [Parameter]
     public DateOnly CurrentDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
     private string GetEventStyle(Event evt)

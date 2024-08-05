@@ -7,21 +7,11 @@
 <button class="btn btn-primary" @onclick="DecaseDateCount">DecaseDateCount</button>
 
 <br />
-<br />
-<br />
+
 
 <WeekView DateMax="dateMax" StartDate="@startDate" />
 
 @code {
-    private static int ClampValue(int input, int min, int max)
-    {
-        if (input < min) return min;
-        if (input > max) return max;
-
-        return input;
-
-    }
-
     private int dateMax = 1;
 
     private DateOnly startDate = DateOnly.FromDateTime(DateTime.Today).AddDays(-(int)DateTime.Today.DayOfWeek);
@@ -33,6 +23,15 @@
     private void DecaseDateCount()
     {
         dateMax = ClampValue(dateMax - 1, 0, 7);
+    }
+
+    private static int ClampValue(int input, int min, int max)
+    {
+        if (input < min) return min;
+        if (input > max) return max;
+
+        return input;
+
     }
 
 }
