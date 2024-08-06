@@ -35,16 +35,22 @@
 
 @code {
     [Parameter]
+    public DateOnly CurrentDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
+
+    [Parameter]
     public bool ShowTime { get; set; }
+
     [Parameter]
     public List<Event> Events { get; set; }
 
-    [Parameter]
-    public DateOnly CurrentDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
+
+
     private string GetEventStyle(Event evt)
     {
         var start = (evt.StartTime.Hour - 6) * 60 + evt.StartTime.Minute;
         var duration = (evt.EndTime.Hour * 60 + evt.EndTime.Minute) - (evt.StartTime.Hour * 60 + evt.StartTime.Minute);
-        return $"top: {start}px; height: {duration}px;";
+        var evtColor = evt.Eventtype;
+
+        return $"top: {start}px; height: {duration}px; background-color: {evtColor};";
     }
 }
