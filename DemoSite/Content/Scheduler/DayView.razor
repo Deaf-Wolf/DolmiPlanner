@@ -23,11 +23,11 @@
                 }
             }
         </div>
-        @foreach (var evt in Events)
+        @foreach (var evt in ProcessedEvents)
         {
-            <div class="event @evt.Eventtype.ToLower()" style="@GetEventStyle(evt)">
-                <div class="event-title">@evt.Title</div>
-                <div class="event-time">@evt.StartTime.ToString("HH:mm") - @evt.EndTime.ToString("HH:mm")</div>
+            <div class="event @evt.Event.Eventtype.ToLower()" style="@GetEventStyle(evt)">
+                <div class="event-title">@evt.Event.Title</div>
+                <div class="event-time">@evt.Event.StartTime.ToString("HH:mm") - @evt.Event.EndTime.ToString("HH:mm")</div>
             </div>
         }
     </div>
@@ -35,7 +35,7 @@
 
 @code {
     [Parameter]
-    public DateOnly CurrentDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
+    public DateOnly CurrentDate { get; set; }// DateOnly.FromDateTime(DateTime.Today);
 
     [Parameter]
     public bool ShowTime { get; set; }
@@ -43,14 +43,55 @@
     [Parameter]
     public List<Event> Events { get; set; }
 
+    private List<ProcessedEvent> ProcessedEvents { get; set; }
 
-
-    private string GetEventStyle(Event evt)
+    private class ProcessedEvent
     {
-        var start = (evt.StartTime.Hour - 6) * 60 + evt.StartTime.Minute;
-        var duration = (evt.EndTime.Hour * 60 + evt.EndTime.Minute) - (evt.StartTime.Hour * 60 + evt.StartTime.Minute);
-        var evtColor = evt.Eventtype;
-
-        return $"top: {start}px; height: {duration}px; background-color: {evtColor};";
+        public Event Event { get; set; }
+        public int OverlapIndex { get; set; }
     }
+    protected override void OnParametersSet()
+    {
+        ProcessedEvents = ProcessEventsForOverlap(Events);
+    }
+
+    private string GetEventStyle(ProcessedEvent evt)
+    {
+        var start = (evt.Event.StartTime.Hour - 6) * 60 + evt.Event.StartTime.Minute;
+        var duration = (evt.Event.EndTime.Hour * 60 + evt.Event.EndTime.Minute) - (evt.Event.StartTime.Hour * 60 + evt.Event.StartTime.Minute);
+        var left = evt.OverlapIndex * 20; // 20% width for each overlapping event
+        var width = 100 - left;
+        return $"top: {start}px; height: {duration}px; background-color: {evt.Event.Eventtype}; left: {left}%; width: {width}%;";
+    }
+
+    private List<ProcessedEvent> ProcessEventsForOverlap(List<Event> events)
+    {
+        var processedEvents = new List<ProcessedEvent>();
+        var sortedEvents = events.OrderBy(e => e.StartTime).ToList();
+
+        for (int i = 0; i < sortedEvents.Count; i++)
+        {
+            var currentEvent = sortedEvents[i];
+            var overlapIndex = 0;
+
+            for (int j = 0; j < i; j++)
+            {
+                if (DoEventsOverlap(currentEvent, sortedEvents[j]))
+                {
+                    overlapIndex++;
+                }
+            }
+
+            processedEvents.Add(new ProcessedEvent { Event = currentEvent, OverlapIndex = overlapIndex });
+        }
+
+        return processedEvents;
+    }
+
+    private bool DoEventsOverlap(Event evt1, Event evt2)
+    {
+        return evt1.StartTime < evt2.EndTime && evt2.StartTime < evt1.EndTime;
+    }
+
+
 }

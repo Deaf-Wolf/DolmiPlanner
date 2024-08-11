@@ -60,21 +60,31 @@
 
 .event {
     position: absolute;
-    left: 2px;
-    right: 2px;
     padding: 5px;
     border-radius: 3px;
     font-size: 12px;
     overflow: hidden;
     z-index: 1;
     color: white;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
 }
+
+/* adds a hover effect for overlapped events
+    .event:hover {
+        z-index: 2;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+*/
 
 .event-title {
     font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .event-time {
     font-size: 10px;
 }
-
