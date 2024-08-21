@@ -1,0 +1,131 @@
+﻿@page "/edit-client"
+@using DemoApiLib.Models.ApiModels
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Forms
+
+
+<div class="progress mb-3">
+    <div class="progress-bar" role="progressbar" style="width: @(CalculateProgress())%;" aria-valuenow="@CalculateProgress()" aria-valuemin="0" aria-valuemax="100">@CalculateProgress()%</div>
+</div>
+
+<EditForm Model="@client" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="firstname" class="form-label">First Name</label>
+        <InputText id="firstname" class="form-control" @bind-Value="client.FirstName" />
+        <ValidationMessage For="@(() => client.FirstName)" />
+    </div>
+    <div class="mb-3">
+        <label for="lastname" class="form-label">Last Name</label>
+        <InputText id="lastname" class="form-control" @bind-Value="client.LastName" />
+        <ValidationMessage For="@(() => client.LastName)" />
+    </div>
+    <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <InputText id="email" class="form-control" @bind-Value="client.Email" />
+        <ValidationMessage For="@(() => client.Email)" />
+    </div>
+    <div class="mb-3">
+        <label for="phone" class="form-label">Phone</label>
+        <InputText id="phone" class="form-control" @bind-Value="client.Phone" />
+        <ValidationMessage For="@(() => client.Phone)" />
+    </div>
+    <div class="mb-3">
+        <label for="preferredContactMethod" class="form-label">Preferred Contact Method</label>
+        <InputSelect id="preferredContactMethod" class="form-select" @bind-Value="client.PreferredContactMethod">
+            <option value="">Select a method</option>
+            <option value="Email">Email</option>
+            <option value="SMS">SMS</option>
+            <option value="Video Call">Video Call</option>
+        </InputSelect>
+        <ValidationMessage For="@(() => client.PreferredContactMethod)" />
+    </div>
+    <div class="mb-3">
+        <label for="preferredSignLanguage" class="form-label">Preferred Sign Language</label>
+        <InputSelect id="preferredSignLanguage" class="form-select" @bind-Value="client.PreferredSignLanguage">
+            <option value="">Select a language</option>
+            <option value="DGS">DGS</option>
+            <option value="IS">IS</option>
+            <option value="LBG">LBG</option>
+        </InputSelect>
+        <ValidationMessage For="@(() => client.PreferredSignLanguage)" />
+    </div>
+    <h4>Billing Address</h4>
+    <div class="mb-3">
+        <label for="streetAddress" class="form-label">Street Address</label>
+        <InputText id="streetAddress" class="form-control" @bind-Value="client.StreetAddress" />
+        <ValidationMessage For="@(() => client.StreetAddress)" />
+    </div>
+    <div class="mb-3">
+        <label for="city" class="form-label">City</label>
+        <InputText id="city" class="form-control" @bind-Value="client.City" />
+        <ValidationMessage For="@(() => client.City)" />
+    </div>
+    <div class="mb-3">
+        <label for="postalCode" class="form-label">Postal Code</label>
+        <InputText id="postalCode" class="form-control" @bind-Value="client.PostalCode" />
+        <ValidationMessage For="@(() => client.PostalCode)" />
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert @(isSuccess ? "alert-success" : "alert-danger") mt-3">@message</div>
+}
+
+@code {
+    [Parameter] public ClientsModel client { get; set; } = new();
+    [Parameter] public EventCallback<bool> OnClientSaved { get; set; }
+    private string message = string.Empty;
+    private bool isSuccess = false;
+
+    private async Task HandleValidSubmit()
+    {
+        message = string.Empty;
+        try
+        {
+            // Simulate API call delay
+            await Task.Delay(1000);
+
+            if (client.Id == Guid.Empty)
+            {
+                client.Id = Guid.NewGuid(); // Generate new GUID for new clients
+                message = "New client added successfully.";
+            }
+            else
+            {
+                message = "Client updated successfully.";
+            }
+
+            isSuccess = true;
+            await OnClientSaved.InvokeAsync(true);
+        }
+        catch (Exception ex)
+        {
+            message = $"An error occurred: {ex.Message}";
+            isSuccess = false;
+            Console.WriteLine($"Exception: {ex.Message}");
+        }
+    }
+
+    private int CalculateProgress()
+    {
+        int filledFields = 0;
+        int totalFields = 9; // Total number of fields in the form
+
+        if (!string.IsNullOrWhiteSpace(client.FirstName)) filledFields++;
+        if (!string.IsNullOrWhiteSpace(client.LastName)) filledFields++;
+        if (!string.IsNullOrWhiteSpace(client.Email)) filledFields++;
+        if (!string.IsNullOrWhiteSpace(client.Phone)) filledFields++;
+        if (!string.IsNullOrWhiteSpace(client.PreferredContactMethod)) filledFields++;
+        if (!string.IsNullOrWhiteSpace(client.PreferredSignLanguage)) filledFields++;
+        if (!string.IsNullOrWhiteSpace(client.StreetAddress)) filledFields++;
+        if (!string.IsNullOrWhiteSpace(client.City)) filledFields++;
+        if (!string.IsNullOrWhiteSpace(client.PostalCode)) filledFields++;
+
+        return (int)Math.Round((double)filledFields / totalFields * 100);
+    }
+}

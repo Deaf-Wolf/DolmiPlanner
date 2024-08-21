@@ -1,0 +1,145 @@
+﻿@using DemoApiLib
+@using DemoApiLib.Models.ApiModels
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Forms
+@inject DemoApiClientService apiClient
+
+<h3>@(events.Id == Guid.Empty ? "Add New Event" : "Edit Event")</h3>
+
+
+@if (!IsUsersLoaded)
+{
+    <p>Loading users...</p>
+}
+else if (users == null || !users.Any())
+{
+    <p style="color:red;">NO USERS FOUND</p>
+}
+else
+{
+    <EditForm Model="@events" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="form-group">
+            <label for="title">Title:</label>
+            <InputText id="title" @bind-Value="events.Title" class="form-control" />
+            <ValidationMessage For="@(() => events.Title)" />
+        </div>
+        <div class="form-group">
+            <label for="eventDate">Event Date:</label>
+            <InputDate id="eventDate" @bind-Value="events.EventDate" class="form-control" />
+            <ValidationMessage For="@(() => events.EventDate)" />
+        </div>
+        <div class="form-group">
+            <label for="startTime">Start Time:</label>
+            <InputDate Type="InputDateType.Time" id="startTime" @bind-Value="events.StartTime" class="form-control" />
+            <ValidationMessage For="@(() => events.StartTime)" />
+        </div>
+        <div class="form-group">
+            <label for="endTime">End Time:</label>
+            <InputDate Type="InputDateType.Time" id="endTime" @bind-Value="events.EndTime" class="form-control" />
+            <ValidationMessage For="@(() => events.EndTime)" />
+        </div>
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <InputTextArea id="description" @bind-Value="events.Description" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="eventType">Event Type:</label>
+            <InputText id="eventType" type="color" @bind-Value="events.Eventtype" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="user">User:</label>
+            <InputSelect id="user" @bind-Value="events.UserId" class="form-control">
+                @foreach (var user in users)
+                {
+                    <option value="@user.Guid">@user.UserName</option>
+                }
+            </InputSelect>
+        </div>
+        <button type="submit" class="btn btn-primary">@(events.Id == Guid.Empty ? "Add Event" : "Update Event")</button>
+    </EditForm>
+}
+
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger mt-3">@errorMessage</div>
+}
+
+@code {
+    [Parameter] public EventCallback<bool> OnUserSaved { get; set; }
+    [Parameter] public Event events { get; set; }
+
+    private List<User>? users;
+    private bool IsUsersLoaded = false;
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+        if (events.Id != null)
+        {
+            await LoadEvent();
+        }
+        else
+        {
+            events.Id = Guid.NewGuid();
+        }
+    }
+
+    private async Task LoadUsers()
+    {
+        users = await apiClient.GetUsers();
+        IsUsersLoaded = true;
+        if (users != null && users.Any() && events.UserId == Guid.Empty)
+        {
+            events.UserId = users.First().Guid;
+        }
+    }
+
+    private async Task LoadEvent()
+    {
+        if (events.Id != Guid.Empty)
+        {
+            events = await apiClient.GetEvent(events.Id) ?? new Event();
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        errorMessage = string.Empty;
+        try
+        {
+            HttpResponseMessage response;
+            if (events.Id == Guid.Empty)
+            {
+                response = await apiClient.AddEvent(events);
+            }
+            else
+            {
+                response = await apiClient.UpdateEvent(events.Id, events);
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                //NavigateToList(); //For no Modal mode
+
+                await OnUserSaved.InvokeAsync(true); //Closes Modal
+            }
+            else
+            {
+                errorMessage = $"API Error: {response.StatusCode} - {await response.Content.ReadAsStringAsync()}";
+                Console.WriteLine(errorMessage);
+            }
+            
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred: {ex.Message}";
+            Console.WriteLine($"Exception: {ex.Message}");
+        }
+
+    }
+
+}

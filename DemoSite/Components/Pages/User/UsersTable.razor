@@ -2,7 +2,7 @@
 @using DemoApiLib
 @using DemoApiLib.Models.ApiModels
 @using DemoSite.Content.Modals
-@using DemoSite.Content.Modals.Forms
+@using DemoSite.Content.Forms
 
 @inject DemoApiClientService apiClient
 
@@ -14,6 +14,8 @@
 }
 else if (!users.Any())
 {
+
+    <button class="btn btn-primary" @onclick="ShowAddUserModal">Add User</button>
     <p>No users found.</p>
 }
 else
@@ -53,7 +55,7 @@ else
     </table>
 }
 
-<Modal IsVisible="@isModalVisible" IsVisibleChanged="@(v => isModalVisible = v)">
+<Modal @bind-IsVisible="@isModalVisible">
     <UserForm User="@currentUser" OnUserSaved="@HandleUserSaved" />
 </Modal>
 

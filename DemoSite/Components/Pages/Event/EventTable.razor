@@ -1,6 +1,8 @@
 ﻿@page "/events"
 @using DemoApiLib
 @using DemoApiLib.Models.ApiModels
+@using DemoSite.Content.Forms
+@using DemoSite.Content.Modals
 @inject DemoApiClientService apiClient
 @inject NavigationManager NavigationManager
 
@@ -13,11 +15,11 @@
 else if (!events.Any())
 {
     <p>No events found.</p>
-    <button type="button" class="btn btn-primary" @onclick="NavigateToAdd">Add Event</button>
+    <button type="button" class="btn btn-primary" @onclick="ShowAddEventModal">Add Event</button>
 }
 else
 {
-    <button type="button" class="btn btn-primary mb-3" @onclick="NavigateToAdd">Add Event</button>
+    <button type="button" class="btn btn-primary mb-3" @onclick="ShowAddEventModal">Add Event</button>
     <table class="table">
         <thead>
             <tr>
@@ -41,7 +43,7 @@ else
                     <td>@evt.Eventtype</td>
                     <td>@evt.Description</td>
                     <td>
-                        <button class="btn btn-secondary btn-sm" @onclick="() => NavigateToEdit(evt.Id)">Edit</button>
+                        <button class="btn btn-secondary btn-sm" @onclick="() => ShowEditEventModal(evt)">Edit</button>
                         <button class="btn btn-danger btn-sm" @onclick="() => Delete(evt.Id)">Delete</button>
                     </td>
                 </tr>
@@ -50,8 +52,18 @@ else
     </table>
 }
 
+
+<Modal @bind-IsVisible="@isModalVisible">
+<EventForm events="@currentEvent" OnUserSaved="@HandleEventsSaved" />
+</Modal>
+
+
+
 @code {
-    private List<Event> events;
+    private List<Event>? events;
+    private Event addEventModel = new();
+    private Event currentEvent = new();
+    private bool isModalVisible = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -63,19 +75,35 @@ else
         events = await apiClient.GetAllEvents();
     }
 
-    private void NavigateToAdd()
-    {
-        NavigationManager.NavigateTo("/eventsAdd");
-    }
-
-    private void NavigateToEdit(Guid eventId)
-    {
-        NavigationManager.NavigateTo($"/eventsAdd/{eventId}");
-    }
-
     private async Task Delete(Guid eventId)
     {
         await apiClient.DeleteEvent(eventId);
         await LoadEvents();
+    }
+
+    private async Task HandleEventsSaved(bool success)
+    {
+        if (success)
+        {
+            isModalVisible = false;
+            await LoadEvents();
+        }
+        else
+        {
+            // Handle unsuccessful save
+            // You might want to keep the modal open and display an error message
+        }
+    }
+
+    private void ShowAddEventModal()
+    {
+        currentEvent = new Event();
+        isModalVisible = true;
+    }
+
+    private void ShowEditEventModal(Event evt)
+    {
+        currentEvent = evt;
+        isModalVisible = true;
     }
 }
