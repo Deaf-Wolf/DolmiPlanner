@@ -1,37 +1,35 @@
 ﻿@page "/eventsviews"
+@page "/eventsviews/{DateParam}"
 @using DemoApiLib.Models.ApiModels
 @using DemoSite.Content.Scheduler
+@using DemoSite.Utilities
 
-<h1 style="text-align:center">Schedules</h1>
-<button class="btn btn-primary" @onclick="IncaseDateCount">IncaseDateCount</button>
-<button class="btn btn-primary" @onclick="DecaseDateCount">DecaseDateCount</button>
+<h1 style="text-align:center">Wochenplanner</h1>
 
+<h3>Kalenderwoche: @calendarWeek</h3>
 <br />
-
-
-<WeekView DateMax="dateMax" StartDate="@startDate" />
+<WeekView DateMax=7 StartDate="@startDate" />
 
 @code {
-    private int dateMax = 1;
 
-    private DateOnly startDate = DateOnly.FromDateTime(DateTime.Today).AddDays(-(int)DateTime.Today.DayOfWeek);
+    [Parameter]
+    public string DateParam { get; set; }
 
-    private void IncaseDateCount()
+    private DateOnly startDate;
+    private int calendarWeek;
+
+    protected override void OnInitialized()
     {
-        dateMax = ClampValue(dateMax + 1, 0, 7);
+        if (DateOnly.TryParse(DateParam, out var parsedDate))
+        {
+            startDate = DatesUtilities.GetMondayOfWeek(parsedDate);
+        }
+        else
+        {
+            startDate = DatesUtilities.GetMondayOfCurrentWeek();
+        }
+
+        calendarWeek = DatesUtilities.GetWeekOfYear(startDate);
     }
-    private void DecaseDateCount()
-    {
-        dateMax = ClampValue(dateMax - 1, 0, 7);
-    }
-
-    private static int ClampValue(int input, int min, int max)
-    {
-        if (input < min) return min;
-        if (input > max) return max;
-
-        return input;
-
-    }
-
+}
 }
