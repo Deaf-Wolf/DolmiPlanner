@@ -6,8 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <ItemGroup> 
-    <ProjectReference Include="..\..\Libary\DemoApiLib\DemoApiLib.csproj" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\DemoApiLib\DemoApiLib.csproj" />
     <ProjectReference Include="..\DemoSite.Client\DemoSite.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.0" />
   </ItemGroup>
