@@ -3,12 +3,16 @@
 @using DemoSite.Content.Scheduler
 @inject NavigationManager NavigationManager
 
-<button class="btn btn-primary" @onclick="Decase">@DecaseLabel</button>
-<h1 style="text-align:center">Schedules</h1>
-<button class="btn btn-primary" @onclick="Incase">@IncaseLabel</button>
-<br />
-<WeekView DateMax="dateMax" StartDate="@startDate" />
-
+<div class="schedules-view">
+    <div class="header-container">
+        <button class="btn btn-primary" @onclick="Decase">@DecaseLabel</button>
+        <h1>Schedules</h1>
+        <button class="btn btn-primary" @onclick="Incase">@IncaseLabel</button>
+    </div>
+    <div class="week-view-container">
+        <WeekView DateMax="dateMax" StartDate="@startDate" />
+    </div>
+</div>
 @code {
     [Parameter]
     [SupplyParameterFromQuery(Name = "date")]

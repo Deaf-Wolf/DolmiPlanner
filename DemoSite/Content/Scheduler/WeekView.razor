@@ -5,14 +5,14 @@
 
 @inject DemoApiClientService apiClient
 
-
 <div class="week-view">
     <div class="date-header-row">
         @for (int i = 0; i < DateMax; i++)
         {
             var currentDate = StartDate.AddDays(i);
             <div class="date-header">
-                @currentDate.ToString("dddd, MMM d")
+                <div class="day-name">@currentDate.ToString("ddd")</div>
+                <div class="date">@currentDate.ToString("MMM d")</div>
             </div>
         }
     </div>
@@ -52,5 +52,4 @@
     {
         return eventsForWeek?.Where(evt => evt.EventDate == date).ToList() ?? new List<EventModel>();
     }
-
 }

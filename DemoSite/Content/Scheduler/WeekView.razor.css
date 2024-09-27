@@ -2,44 +2,76 @@
     display: flex;
     flex-direction: column;
     width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .date-header-row {
     display: flex;
     width: 100%;
+    background-color: #f8f9fa;
 }
 
 .date-header {
     flex: 1;
-    min-width: 200px;
+    min-width: 120px;
     text-align: center;
     padding: 10px;
-    background-color: #f0f0f0;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.day-name {
     font-weight: bold;
+    color: #495057;
+}
+
+.date {
+    font-size: 0.9em;
+    color: #6c757d;
 }
 
 .day-columns-container {
     display: flex;
-    overflow-x: auto;
+    flex-grow: 1;
+    overflow-y: auto;
     width: 100%;
 }
 
 .day-column {
     flex: 1;
-    min-width: 200px;
+    min-width: 120px;
+    border-right: 1px solid #e9ecef;
 }
 
-    /* Remove the margin-right from the last day-column */
     .day-column:last-child {
-        margin-right: 0;
+        border-right: none;
     }
 
 /* Adjust DayView styles */
 ::deep .day-view {
-    border-top: none; /* Remove top border as we now have headers */
+    height: 100%;
+    min-height: 960px; /* Adjust this value based on your needs */
 }
 
     ::deep .day-view h3 {
-        display: none; /* Hide the date header in DayView as we now have it in WeekView */
+        display: none;
     }
+
+::deep .event {
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+::deep .hour {
+    color: #6c757d;
+}
+
+::deep .hour-line {
+    border-top: 1px solid #e9ecef;
+}
+
+::deep .minute-line {
+    border-top: 1px dashed #e9ecef;
+}
