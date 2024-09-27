@@ -3,9 +3,9 @@
 @using DemoSite.Content.Scheduler
 @inject NavigationManager NavigationManager
 
+<button class="btn btn-primary" @onclick="Decase">@DecaseLabel</button>
 <h1 style="text-align:center">Schedules</h1>
-<button class="btn btn-primary" @onclick="IncaseDateCount">IncaseDateCount</button>
-<button class="btn btn-primary" @onclick="DecaseDateCount">DecaseDateCount</button>
+<button class="btn btn-primary" @onclick="Incase">@IncaseLabel</button>
 <br />
 <WeekView DateMax="dateMax" StartDate="@startDate" />
 
@@ -20,16 +20,21 @@
 
     private int dateMax = 7;
     private DateOnly startDate;
+    private DateOnly currentDate = DateOnly.FromDateTime(DateTime.Today).AddDays(1 - (int)DateTime.Today.DayOfWeek);
+    private string IncaseLabel = "Nächste Woche";
+    private string DecaseLabel = "Vergangene Woche";
 
     protected override void OnInitialized()
     {
         if (DateParam != null && DateOnly.TryParse(DateParam, out var parsedDate))
         {
             startDate = parsedDate;
+            IncaseLabel = "Nächster Tag";
+            DecaseLabel = "Vergangener Tag";
         }
         else
         {
-            startDate = DateOnly.FromDateTime(DateTime.Today).AddDays(1-(int)DateTime.Today.DayOfWeek);
+            startDate = currentDate;
         }
 
         if (DateMaxParam.HasValue)
@@ -38,27 +43,45 @@
         }
     }
 
-    private void IncaseDateCount()
+    private void Incase()
     {
-        dateMax = ClampValue(dateMax + 1, 0, 7);
-        UpdateUrl();
+        if (dateMax != 7)
+        {
+            startDate = startDate.AddDays(1);
+            UpdateUrl();
+        }
+        else
+        {
+            startDate = startDate.AddDays(7);
+        }
+       
     }
 
-    private void DecaseDateCount()
+    private void Decase()
     {
-        dateMax = ClampValue(dateMax - 1, 0, 7);
-        UpdateUrl();
-    }
-
-    private static int ClampValue(int input, int min, int max)
-    {
-        if (input < min) return min;
-        if (input > max) return max;
-        return input;
+        if (dateMax != 7)
+        {
+            startDate = startDate.AddDays(-1);
+            UpdateUrl();
+        }
+        else
+        {
+            startDate = startDate.AddDays(-7);
+        }
+        
     }
 
     private void UpdateUrl()
     {
         NavigationManager.NavigateTo($"/schedulesview?date={startDate}&dateMax={dateMax}", forceLoad: false);
     }
+
+// Not Used bu Useful
+//    private static int ClampValue(int input, int min, int max)
+//    {
+//        if (input < min) return min;
+//        if (input > max) return max;
+//        return input;
+//    }
 }
+
