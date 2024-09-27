@@ -41,13 +41,13 @@
     public bool ShowTime { get; set; }
 
     [Parameter]
-    public List<Event> Events { get; set; }
+    public List<EventModel> Events { get; set; }
 
     private List<ProcessedEvent> ProcessedEvents { get; set; }
 
     private class ProcessedEvent
     {
-        public Event Event { get; set; }
+        public EventModel Event { get; set; }
         public int OverlapIndex { get; set; }
     }
     protected override void OnParametersSet()
@@ -64,7 +64,7 @@
         return $"top: {start}px; height: {duration}px; background-color: {evt.Event.Eventtype}; left: {left}%; width: {width}%;";
     }
 
-    private List<ProcessedEvent> ProcessEventsForOverlap(List<Event> events)
+    private List<ProcessedEvent> ProcessEventsForOverlap(List<EventModel> events)
     {
         var processedEvents = new List<ProcessedEvent>();
         var sortedEvents = events.OrderBy(e => e.StartTime).ToList();
@@ -88,7 +88,7 @@
         return processedEvents;
     }
 
-    private bool DoEventsOverlap(Event evt1, Event evt2)
+    private bool DoEventsOverlap(EventModel evt1, EventModel evt2)
     {
         return evt1.StartTime < evt2.EndTime && evt2.StartTime < evt1.EndTime;
     }

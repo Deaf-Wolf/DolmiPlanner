@@ -35,7 +35,7 @@
     [Parameter]
     public DateOnly StartDate { get; set; } = DateOnly.FromDateTime(DateTime.Today).AddDays(-(int)DateTime.Today.DayOfWeek);
 
-    private List<Event>? eventsForWeek;
+    private List<EventModel>? eventsForWeek;
 
     protected override async Task OnInitializedAsync()
     {
@@ -48,9 +48,9 @@
         StateHasChanged();
     }
 
-    private List<Event> GetEventsForDate(DateOnly date)
+    private List<EventModel> GetEventsForDate(DateOnly date)
     {
-        return eventsForWeek?.Where(evt => evt.EventDate == date).ToList() ?? new List<Event>();
+        return eventsForWeek?.Where(evt => evt.EventDate == date).ToList() ?? new List<EventModel>();
     }
 
 }

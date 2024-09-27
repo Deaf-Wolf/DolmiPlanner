@@ -67,7 +67,7 @@ else
     [Parameter]
     public Guid? Id { get; set; }
 
-    private Event events = new Event();
+    private EventModel events = new EventModel();
     private List<User>? users;
     private bool IsUsersLoaded = false;
 
@@ -98,7 +98,7 @@ else
     {
         if (Id.HasValue)
         {
-            events = await apiClient.GetEvent(Id.Value) ?? new Event();
+            events = await apiClient.GetEvent(Id.Value) ?? new EventModel();
         }
     }
 

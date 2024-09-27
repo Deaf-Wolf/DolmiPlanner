@@ -1,8 +1,19 @@
-﻿.calendar {
+﻿.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+    .calendar-header h4 {
+        margin: 0;
+    }
+
+.calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 5px;
-    max-width: 800px;
+    max-width: 1000px;
     margin: 0 auto;
 }
 
@@ -16,8 +27,14 @@
 .day {
     border: 1px solid #ddd;
     padding: 5px;
-    min-height: 100px;
+    min-height: 120px;
+    cursor: pointer;
+    overflow: hidden;
 }
+
+    .day:hover {
+        background-color: #f0f0f0;
+    }
 
 .other-month {
     background-color: #f9f9f9;
@@ -34,9 +51,18 @@
     padding: 2px 4px;
     margin-bottom: 2px;
     border-radius: 3px;
+    overflow: hidden;
+}
+
+.event-title {
+    font-weight: bold;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.event-time {
+    font-size: 0.9em;
 }
 
 .work {

@@ -1,0 +1,64 @@
+﻿@page "/schedulesview"
+@using DemoApiLib.Models.ApiModels
+@using DemoSite.Content.Scheduler
+@inject NavigationManager NavigationManager
+
+<h1 style="text-align:center">Schedules</h1>
+<button class="btn btn-primary" @onclick="IncaseDateCount">IncaseDateCount</button>
+<button class="btn btn-primary" @onclick="DecaseDateCount">DecaseDateCount</button>
+<br />
+<WeekView DateMax="dateMax" StartDate="@startDate" />
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "date")]
+    public string? DateParam { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "dateMax")]
+    public int? DateMaxParam { get; set; }
+
+    private int dateMax = 1;
+    private DateOnly startDate;
+
+    protected override void OnInitialized()
+    {
+        if (DateParam != null && DateOnly.TryParse(DateParam, out var parsedDate))
+        {
+            startDate = parsedDate;
+        }
+        else
+        {
+            startDate = DateOnly.FromDateTime(DateTime.Today).AddDays(-(int)DateTime.Today.DayOfWeek);
+        }
+
+        if (DateMaxParam.HasValue)
+        {
+            dateMax = DateMaxParam.Value;
+        }
+    }
+
+    private void IncaseDateCount()
+    {
+        dateMax = ClampValue(dateMax + 1, 0, 7);
+        UpdateUrl();
+    }
+
+    private void DecaseDateCount()
+    {
+        dateMax = ClampValue(dateMax - 1, 0, 7);
+        UpdateUrl();
+    }
+
+    private static int ClampValue(int input, int min, int max)
+    {
+        if (input < min) return min;
+        if (input > max) return max;
+        return input;
+    }
+
+    private void UpdateUrl()
+    {
+        NavigationManager.NavigateTo($"/schedulesview?date={startDate}&dateMax={dateMax}", forceLoad: false);
+    }
+}

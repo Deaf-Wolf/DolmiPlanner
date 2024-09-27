@@ -1,0 +1,95 @@
+﻿@page "/calendar"
+@using DemoApiLib
+@using DemoApiLib.Models.ApiModels
+@inject NavigationManager NavigationManager
+@inject DemoApiClientService apiClient
+
+<h3>Calendar</h3>
+
+<div class="calendar-header">
+    <button class="btn btn-secondary" @onclick="PreviousMonth">&lt;</button>
+    <h4>@CurrentDate.ToString("MMMM yyyy")</h4>
+    <button class="btn btn-secondary" @onclick="NextMonth">&gt;</button>
+</div>
+
+<div class="calendar">
+    @for (int i = 0; i < 7; i++)
+    {
+        <div class="day-name">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedDayNames[i]</div>
+    }
+    @foreach (var day in Days)
+    {
+        <div class="day @(day.Month == CurrentDate.Month ? "" : "other-month")" @onclick="@(() => NavigateToEventsView(day))">
+            <div class="date">@day.Day</div>
+            @{
+                var dayEvents = Events.Where(e => e.EventDate == DateOnly.FromDateTime(day)).ToList();
+            }
+            @foreach (var evt in dayEvents)
+            {
+                <div class="event @evt.Eventtype.ToLower()">
+                    <div class="event-title">@evt.Title</div>
+                    <div class="event-time">@evt.StartTime.ToString("HH:mm") - @evt.EndTime.ToString("HH:mm")</div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private DateTime CurrentDate { get; set; } = DateTime.Today;
+    private List<DateTime> Days { get; set; } = new List<DateTime>();
+    private List<EventModel> Events { get; set; } = new List<EventModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEventsAndGenerateCalendar();
+    }
+
+    private async Task LoadEventsAndGenerateCalendar()
+    {
+        await LoadEvents();
+        GenerateCalendarDays();
+        StateHasChanged();
+    }
+
+    private async Task LoadEvents()
+    {
+        var startDate = new DateOnly(CurrentDate.Year, CurrentDate.Month, 1);
+        var endDate = startDate.AddMonths(1).AddDays(-1);
+        Events = await apiClient.GetAllEvents() ?? new List<EventModel>();
+        Events = Events.Where(e => e.EventDate >= startDate && e.EventDate <= endDate).ToList();
+    }
+
+    private void GenerateCalendarDays()
+    {
+        Days.Clear();
+        var firstDayOfMonth = new DateTime(CurrentDate.Year, CurrentDate.Month, 1);
+        var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+        var startDate = firstDayOfMonth.AddDays(-(int)firstDayOfMonth.DayOfWeek);
+        var endDate = lastDayOfMonth.AddDays(6 - (int)lastDayOfMonth.DayOfWeek);
+
+        for (var day = startDate; day <= endDate; day = day.AddDays(1))
+        {
+            Days.Add(day);
+        }
+    }
+
+    private void NavigateToEventsView(DateTime selectedDate)
+    {
+        var dateOnly = DateOnly.FromDateTime(selectedDate);
+        NavigationManager.NavigateTo($"/schedulesview?date={dateOnly}&dateMax=1");
+    }
+
+    private async Task PreviousMonth()
+    {
+        CurrentDate = CurrentDate.AddMonths(-1);
+        await LoadEventsAndGenerateCalendar();
+    }
+
+    private async Task NextMonth()
+    {
+        CurrentDate = CurrentDate.AddMonths(1);
+        await LoadEventsAndGenerateCalendar();
+    }
+}

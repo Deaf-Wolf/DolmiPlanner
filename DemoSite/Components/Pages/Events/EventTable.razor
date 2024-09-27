@@ -60,9 +60,9 @@ else
 
 
 @code {
-    private List<Event>? events;
-    private Event addEventModel = new();
-    private Event currentEvent = new();
+    private List<EventModel>? events;
+    private EventModel addEventModel = new();
+    private EventModel currentEvent = new();
     private bool isModalVisible = false;
 
     protected override async Task OnInitializedAsync()
@@ -97,11 +97,11 @@ else
 
     private void ShowAddEventModal()
     {
-        currentEvent = new Event();
+        currentEvent = new EventModel();
         isModalVisible = true;
     }
 
-    private void ShowEditEventModal(Event evt)
+    private void ShowEditEventModal(EventModel evt)
     {
         currentEvent = evt;
         isModalVisible = true;
