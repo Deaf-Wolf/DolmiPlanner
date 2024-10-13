@@ -2,6 +2,7 @@
 @using DemoApiLib
 @using DemoApiLib.Models.ApiModels
 @using DemoSite.Content.Forms
+@using DemoSite.Utilities.Global
 @inject DemoApiClientService apiClient
 @inject NavigationManager NavigationManager
 
@@ -39,7 +40,15 @@ else
                     <td>@evt.EventDate.ToString("d")</td>
                     <td>@evt.StartTime.ToString("t")</td>
                     <td>@evt.EndTime.ToString("t")</td>
-                    <td>@evt.Eventtype</td>
+                    <td>
+                        @foreach (var eventType in EventTypes.Types)
+                        {
+                            if (evt.Eventtype == eventType.HexCode)
+                            {
+                                @eventType.Type;
+                            }
+                        }
+                    </td>
                     <td>@evt.Description</td>
                     <td>
                         <button class="btn btn-secondary btn-sm" @onclick="() => ShowEditEventModal(evt)">Edit</button>
