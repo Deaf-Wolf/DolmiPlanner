@@ -1,0 +1,97 @@
+﻿@page "/eventsviews"
+@page "/eventsviews/{DateParam}"
+@using DemoApiLib
+@using DemoApiLib.Models.ApiModels
+@using DemoSite.Utilities
+
+@inject DemoApiClientService apiClient
+
+<h1 style="text-align:center">Wochenplanner</h1>
+
+<div class="eventView-header">
+    <button class="btn btn-secondary" @onclick="PreviousMonth">&lt;</button>
+    <h4>Kalenderwoche: @calendarWeek</h4>
+    <button class="btn btn-secondary" @onclick="NextMonth">&gt;</button>
+</div>
+
+
+<div class="week-view">
+    <div class="date-header-row">
+        @for (int i = 0; i < DateMax; i++)
+        {
+            var currentDate = StartDate.AddDays(i);
+            <div class="date-header">
+                @currentDate.ToString("dddd, MMM d")
+            </div>
+        }
+    </div>
+    <div class="day-columns-container">
+        @for (int i = 0; i < DateMax; i++)
+        {
+            var currentDate = StartDate.AddDays(i);
+            var showTime = i == 0; // Show time only for the first day
+
+            <div class="day-column">
+                <DayView ShowTime="@showTime" Events="@(GetEventsForDate(currentDate))" CurrentDate="@currentDate" />
+            </div>
+        }
+    </div>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public string DateParam { get; set; }
+
+    public int DateMax = 7;
+    private List<EventModel>? eventsForWeek;
+
+    private DateOnly StartDate;
+    private int calendarWeek;
+
+    protected override async Task OnInitializedAsync()
+    {
+        LoadSchedule();
+        await LoadEvents();
+    }
+
+    private void LoadSchedule()
+    {
+        if (DateOnly.TryParse(DateParam, out var parsedDate))
+        {
+            StartDate = DatesUtilities.GetMondayOfWeek(parsedDate);
+        }
+        else
+        {
+            StartDate = DatesUtilities.GetMondayOfCurrentWeek();
+        }
+
+        calendarWeek = DatesUtilities.GetWeekOfYear(StartDate);
+        StateHasChanged();
+    }
+
+    private async Task LoadEvents()
+    {
+        eventsForWeek = await apiClient.GetAllEvents();
+        StateHasChanged();
+    }
+
+    private List<EventModel> GetEventsForDate(DateOnly date)
+    {
+        return eventsForWeek?.Where(evt => evt.EventDate == date).ToList() ?? new List<EventModel>();
+    }
+
+    private void PreviousMonth()
+    {
+        StartDate = StartDate.AddDays(-7);
+        StateHasChanged();
+    }
+
+    private void NextMonth()
+    {
+        StartDate = StartDate.AddDays(7);
+        StateHasChanged();
+    }
+
+}

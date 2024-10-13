@@ -1,5 +1,4 @@
-﻿using DemoSite.Content.Modals;
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace DemoSite.Utilities
 {

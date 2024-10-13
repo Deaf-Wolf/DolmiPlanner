@@ -2,7 +2,6 @@
 @using DemoApiLib
 @using DemoApiLib.Models.ApiModels
 @using DemoSite.Content.Forms
-@using DemoSite.Content.Modals
 @inject DemoApiClientService apiClient
 @inject NavigationManager NavigationManager
 
@@ -52,17 +51,31 @@ else
     </table>
 }
 
+@if (isModalVisible)
+{
+    <div class="modal show" tabindex="-1" style="display: block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">EventForm</h5>
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    <EventForm events="@currentEvent" OnUserSaved="@HandleEventsSaved" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop show"></div>
+}
 
-<Modal @bind-IsVisible="@isModalVisible">
-<EventForm events="@currentEvent" OnUserSaved="@HandleEventsSaved" />
-</Modal>
 
 
 
 @code {
-    private List<Event>? events;
-    private Event addEventModel = new();
-    private Event currentEvent = new();
+    private List<EventModel>? events;
+    private EventModel addEventModel = new();
+    private EventModel currentEvent = new();
     private bool isModalVisible = false;
 
     protected override async Task OnInitializedAsync()
@@ -97,13 +110,18 @@ else
 
     private void ShowAddEventModal()
     {
-        currentEvent = new Event();
+        currentEvent = new EventModel();
         isModalVisible = true;
     }
 
-    private void ShowEditEventModal(Event evt)
+    private void ShowEditEventModal(EventModel evt)
     {
         currentEvent = evt;
         isModalVisible = true;
+    }
+
+    private void CloseModal()
+    {
+        isModalVisible = false;
     }
 }

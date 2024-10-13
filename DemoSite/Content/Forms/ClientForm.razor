@@ -4,10 +4,6 @@
 @using Microsoft.AspNetCore.Components.Forms
 
 
-<div class="progress mb-3">
-    <div class="progress-bar" role="progressbar" style="width: @(CalculateProgress())%;" aria-valuenow="@CalculateProgress()" aria-valuemin="0" aria-valuemax="100">@CalculateProgress()%</div>
-</div>
-
 <EditForm Model="@client" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
@@ -109,23 +105,5 @@
             isSuccess = false;
             Console.WriteLine($"Exception: {ex.Message}");
         }
-    }
-
-    private int CalculateProgress()
-    {
-        int filledFields = 0;
-        int totalFields = 9; // Total number of fields in the form
-
-        if (!string.IsNullOrWhiteSpace(client.FirstName)) filledFields++;
-        if (!string.IsNullOrWhiteSpace(client.LastName)) filledFields++;
-        if (!string.IsNullOrWhiteSpace(client.Email)) filledFields++;
-        if (!string.IsNullOrWhiteSpace(client.Phone)) filledFields++;
-        if (!string.IsNullOrWhiteSpace(client.PreferredContactMethod)) filledFields++;
-        if (!string.IsNullOrWhiteSpace(client.PreferredSignLanguage)) filledFields++;
-        if (!string.IsNullOrWhiteSpace(client.StreetAddress)) filledFields++;
-        if (!string.IsNullOrWhiteSpace(client.City)) filledFields++;
-        if (!string.IsNullOrWhiteSpace(client.PostalCode)) filledFields++;
-
-        return (int)Math.Round((double)filledFields / totalFields * 100);
     }
 }

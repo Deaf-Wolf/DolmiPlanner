@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\css\WeekScheduler.css" />
+    <Folder Include="wwwroot\css\" />
   </ItemGroup>
 
 </Project>

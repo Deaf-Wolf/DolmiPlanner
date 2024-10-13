@@ -4,7 +4,7 @@
 @inject NavigationManager NavigationManager
 @inject DemoApiClientService apiClient
 
-<h3>Calendar</h3>
+<h1 class="pageTitle">Calendar</h1>
 
 <div class="calendar-header">
     <button class="btn btn-secondary" @onclick="PreviousMonth">&lt;</button>
@@ -38,7 +38,7 @@
 @code {
     private DateTime CurrentDate { get; set; } = DateTime.Today;
     private List<DateTime> Days { get; set; } = new List<DateTime>();
-    private List<Event> Events { get; set; } = new List<Event>();
+    private List<EventModel> Events { get; set; } = new List<EventModel>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -56,7 +56,7 @@
     {
         var startDate = new DateOnly(CurrentDate.Year, CurrentDate.Month, 1);
         var endDate = startDate.AddMonths(1).AddDays(-1);
-        Events = await apiClient.GetAllEvents() ?? new List<Event>();
+        Events = await apiClient.GetAllEvents() ?? new List<EventModel>();
         Events = Events.Where(e => e.EventDate >= startDate && e.EventDate <= endDate).ToList();
     }
 

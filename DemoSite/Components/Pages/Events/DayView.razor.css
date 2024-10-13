@@ -1,6 +1,7 @@
 ﻿.day-view {
     display: flex;
-    height: 960px; /* 16 hours * 60 minutes */
+    height: 900px; /* 16 hours * 60 minutes */
+    max-height: 960px;
     border: 1px solid #ccc;
     font-family: Arial, sans-serif;
 }

@@ -1,4 +1,17 @@
-﻿.week-view {
+﻿
+.eventView-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    max-width: auto;
+}
+
+    .eventView-header h4 {
+        margin: 0;
+    }
+
+.week-view {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -27,7 +40,8 @@
 
 .day-column {
     flex: 1;
-    min-width: 200px;
+    min-width: 100px;
+    height: auto;
 }
 
     /* Remove the margin-right from the last day-column */

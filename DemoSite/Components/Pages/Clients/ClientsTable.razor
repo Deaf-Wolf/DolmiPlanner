@@ -1,7 +1,6 @@
 ﻿@page "/clients"
 @using DemoApiLib.Models.ApiModels
 @using DemoSite.Content.Forms
-@using DemoSite.Content.Modals
 
 <h3>Clients Table</h3>
 
@@ -55,10 +54,23 @@ else
         </tbody>
     </table>
 }
-
-<Modal @bind-IsVisible="@isModalVisible">
-    <ClientForm Client="@currentClient" OnClientSaved="@HandleClientSaved" />
-</Modal>
+@if (isModalVisible)
+{
+    <div class="modal show" tabindex="-1" style="display: block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">ClientForm</h5>
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    <ClientForm Client="@currentClient" OnClientSaved="@HandleClientSaved" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop show"></div>
+}
 
 @code {
     private List<ClientsModel> Clients = new();
@@ -81,11 +93,11 @@ else
             Clients.Add(new ClientsModel
             {
                 Id = Guid.NewGuid(),
-                FirstName = "Random",
-                LastName = "Opfer",
-                Email = "RandomOpfer@Opfermail.op",
+                FirstName = "Lars",
+                LastName = "Sodomann",
+                Email = "StadtMain@mail.xyz",
                 Phone = "+49 999 9999",
-                PreferredSignLanguage = "IS"
+                PreferredSignLanguage = "DGS"
             });
         }
     }
@@ -100,6 +112,11 @@ else
     {
         currentClient = client;
         isModalVisible = true;
+    }
+
+    private void CloseModal()
+    {
+        isModalVisible = false;
     }
 
     private async Task HandleClientSaved(bool success)

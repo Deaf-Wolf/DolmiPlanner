@@ -1,7 +1,6 @@
 ﻿@page "/users"
 @using DemoApiLib
 @using DemoApiLib.Models.ApiModels
-@using DemoSite.Content.Modals
 @using DemoSite.Content.Forms
 
 @inject DemoApiClientService apiClient
@@ -55,9 +54,23 @@ else
     </table>
 }
 
-<Modal @bind-IsVisible="@isModalVisible">
-    <UserForm User="@currentUser" OnUserSaved="@HandleUserSaved" />
-</Modal>
+@if (isModalVisible)
+{
+    <div class="modal show" tabindex="-1" style="display: block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">UserForm</h5>
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    <UserForm User="@currentUser" OnUserSaved="@HandleUserSaved" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop show"></div>
+}
 
 @code {
     private List<User>? users;
@@ -86,6 +99,11 @@ else
     {
         currentUser = user;
         isModalVisible = true;
+    }
+
+    private void CloseModal()
+    {
+        isModalVisible = false;
     }
 
     private async Task HandleUserSaved(bool success)
