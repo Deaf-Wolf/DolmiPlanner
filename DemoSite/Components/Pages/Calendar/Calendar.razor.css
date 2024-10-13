@@ -1,17 +1,9 @@
-<<<<<<<< HEAD:DemoSite/Components/Pages/Calendar/Calendar.razor.css
-﻿
 .calendar-header {
-========
-﻿.calendar-header {
->>>>>>>> 6f4bb0d45b94f94e70fb766c63f5d1aaaa533110:DemoSite/Components/Pages/SchedulesViews/Calendar.razor.css
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-<<<<<<<< HEAD:DemoSite/Components/Pages/Calendar/Calendar.razor.css
     max-width: auto;
-========
->>>>>>>> 6f4bb0d45b94f94e70fb766c63f5d1aaaa533110:DemoSite/Components/Pages/SchedulesViews/Calendar.razor.css
 }
 
     .calendar-header h4 {
@@ -22,11 +14,7 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 5px;
-<<<<<<<< HEAD:DemoSite/Components/Pages/Calendar/Calendar.razor.css
     max-width: auto;
-========
-    max-width: 1000px;
->>>>>>>> 6f4bb0d45b94f94e70fb766c63f5d1aaaa533110:DemoSite/Components/Pages/SchedulesViews/Calendar.razor.css
     margin: 0 auto;
 }
 
@@ -78,17 +66,3 @@
     font-size: 0.9em;
 }
 
-.work {
-    background-color: #e6f3ff;
-    color: #0066cc;
-}
-
-.personal {
-    background-color: #fff0f5;
-    color: #cc0066;
-}
-
-.social {
-    background-color: #f0fff0;
-    color: #006600;
-}
